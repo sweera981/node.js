@@ -40,26 +40,81 @@
 // });
 
 
-import express from "express"
+// import express from "express"
 
+// const app = express();
+
+// app.use(express.json());
+
+
+// // POST Route for Form Submission
+// app.post('/api/user', (req, res) => {
+//     // data recieve from req.body
+//     const { name, email, password } = req.body;
+//     if (!name || !email || !password) {
+//         return res.status(400).json({
+//             message: "Please provide all the required fields",
+//         });
+//     }
+//     console.log("Form Data Received:", req.body);
+
+//     res.json({
+//         message: "Data successfully received via body!",
+//         data: { name, email }
+//     });
+// });
+
+// app.listen(5000, () => {
+//     console.log('Server is running on port 5000');
+// });
+
+
+import express from "express";
+import multer from "multer";
 const app = express();
-
 app.use(express.json());
-
-
+console.log()
 // POST Route for Form Submission
-app.post('/api/user', (req, res) => {
-    // data recieve from req.body 
-    const { name, email, password } = req.body;
+app.post('/login', (req, res) => {
+    const name = req.headers;
 
-    console.log("Form Data Received:", req.body);
-
-    res.json({
-        message: "Data successfully received via body!",
-        data: { name, email }
-    });
+    if (name === "" || name === null || name === undefined) {
+        return res.status(400).json({
+            message: "Please provide name",
+        });
+    }
+    else {
+        return res.status(200).json({
+            message: "Data successfully received via headers!",
+            user: { name },
+        });
+    }
 });
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9)
+        cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
+    },
+});
+const upload = multer({ storage: storage });
+app.post("/upload", upload.array("image", 5), (req, res) => {
+    console.log(req.files);
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({
+            message: "Please provide file",
+        });
+    }
+    return res.status(200).json({
+        message: "File uploaded successfully",
+        data: req.files.map(file => file.filename)
+    });
+})
+
+
 app.listen(5000, () => {
-    console.log('Server is running on port 5000');
+    console.log("Server is running on port 5000");
 });
