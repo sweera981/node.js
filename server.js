@@ -69,52 +69,83 @@
 // });
 
 
+// import express from "express";
+// import multer from "multer";
+// const app = express();
+// app.use(express.json());
+// console.log()
+// // POST Route for Form Submission
+// app.post('/login', (req, res) => {
+//     const name = req.headers;
+
+//     if (name === "" || name === null || name === undefined) {
+//         return res.status(400).json({
+//             message: "Please provide name",
+//         });
+//     }
+//     else {
+//         return res.status(200).json({
+//             message: "Data successfully received via headers!",
+//             user: { name },
+//         });
+//     }
+// });
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, "uploads/");
+//     },
+//     filename: function (req, file, cb) {
+//         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9)
+//         cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
+//     },
+// });
+// const upload = multer({ storage: storage });
+// app.post("/upload", upload.array("image", 5), (req, res) => {
+//     console.log(req.files);
+//     if (!req.files || req.files.length === 0) {
+//         return res.status(400).json({
+//             message: "Please provide file",
+//         });
+//     }
+//     return res.status(200).json({
+//         message: "File uploaded successfully",
+//         data: req.files.map(file => file.filename)
+//     });
+// })
+
+
+// app.listen(5000, () => {
+//     console.log("Server is running on port 5000");
+// });
+
+
+
 import express from "express";
-import multer from "multer";
+import mongoose from 'mongoose'
+import 'dotenv/config';
 const app = express();
 app.use(express.json());
-console.log()
-// POST Route for Form Submission
-app.post('/login', (req, res) => {
-    const name = req.headers;
 
-    if (name === "" || name === null || name === undefined) {
-        return res.status(400).json({
-            message: "Please provide name",
-        });
-    }
-    else {
-        return res.status(200).json({
-            message: "Data successfully received via headers!",
-            user: { name },
-        });
-    }
+app.get("/", (req, res) => {
+    res.send("server is running smoothly!");
 });
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9)
-        cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
-    },
-});
-const upload = multer({ storage: storage });
-app.post("/upload", upload.array("image", 5), (req, res) => {
-    console.log(req.files);
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).json({
-            message: "Please provide file",
-        });
-    }
-    return res.status(200).json({
-        message: "File uploaded successfully",
-        data: req.files.map(file => file.filename)
-    });
-})
 
+async function main() {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("Database connected mongodb");
+    } catch (err) {
+        console.log(err);
+    }
+}
+main()
 
 app.listen(5000, () => {
     console.log("Server is running on port 5000");
 });
+
+
+//?sSNy1N9Bu19vilus
+//?pass123

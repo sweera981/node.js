@@ -10,7 +10,9 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "dotenv": "^18.0.2",
     "express": "^5.2.1",
+    "mongoose": "^9.10.1",
     "multer": "^2.4.0"
   }
 }
