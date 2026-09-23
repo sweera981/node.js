@@ -147,5 +147,3 @@ app.listen(5000, () => {
 });
 
 
-//?sSNy1N9Bu19vilus
-//?pass123
