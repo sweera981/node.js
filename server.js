@@ -196,7 +196,7 @@ const userSchema = new mongoose.Schema({
 
 const userModel = new mongoose.model("User", userSchema)
 
-app.post("/user", async (req, res) => {
+app.post("/users", async (req, res) => {
     const { userName, email, password, phone } = req.body;
 
     if (!userName || !email || !password || !phone) {
@@ -219,7 +219,63 @@ app.post("/user", async (req, res) => {
         user
     });
 });
+// get all users
+app.get("/users", async (req, res) => {
+    const users = await userModel.find();
+    res.status(200).json({ success: true, users });
+});
 
+// get user through id
+app.get("/user/:id", async (req, res) => {
+    const { id } = req.params;
+
+    const user = await userModel.findById(id);
+
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
+    }
+
+    res.status(200).json({
+        success: true,
+        user
+    });
+});
+app.put("/user/:id", upload.single("picture"), async (req, res) => {
+    const { id } = req.params;
+    let updateData = req.body;
+
+    if (req.file) {
+        updateData.picture = `${process.env.APP_URL}/uploads/${req.file.filename}`;
+    }
+
+    const updatedUser = await userModel.findByIdAndUpdate(id, updateData, {
+        new: true,
+        runValidators: true
+    });
+
+    if (!updatedUser) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "User updated", user: updatedUser });
+});
+
+
+
+app.delete("/user/:id", async (req, res) => {
+    const { id } = req.params;
+
+    const deletedUser = await userModel.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, message: "User deleted successfully" });
+});
 app.listen(5000, () => {
     console.log("Server started on port 5000")
 })
