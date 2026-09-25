@@ -121,29 +121,105 @@
 
 
 
+// import express from "express";
+// import mongoose from 'mongoose'
+// import 'dotenv/config';
+// const app = express();
+// app.use(express.json());
+
+// app.get("/", (req, res) => {
+//     res.send("server is running smoothly!");
+// });
+
+
+// async function main() {
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI);
+//         console.log("Database connected mongodb");
+//     } catch (err) {
+//         console.log(err);
+//     }
+// }
+// main()
+
+// app.listen(5000, () => {
+//     console.log("Server is running on port 5000");
+// });
+
+
 import express from "express";
-import mongoose from 'mongoose'
-import 'dotenv/config';
+import mongoose from "mongoose";
+import multer from "multer";
+import "dotenv/config";
+
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.send("server is running smoothly!");
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
+    },
 });
+const upload = multer({ storage: storage });
 
-
+// MongoDB connection
 async function main() {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("Database connected mongodb");
     } catch (err) {
-        console.log(err);
+        console.log("Database connection error:", err);
     }
 }
-main()
+main();
 
-app.listen(5000, () => {
-    console.log("Server is running on port 5000");
+const userSchema = new mongoose.Schema({
+    userName: {
+        type: String, minLength: 3, maxLength: 20, required: true
+    },
+    email: {
+        type: String, required: true, unique: true, lowercase: true
+    },
+    phone: {
+        type: String, required: true, unique: true
+    },
+    password: {
+        type: String, minLength: 5, maxLength: 20, required: true, select: false
+    },
+}, { timestamps: true })
+
+
+const userModel = new mongoose.model("User", userSchema)
+
+app.post("/user", async (req, res) => {
+    const { userName, email, password, phone } = req.body;
+
+    if (!userName || !email || !password || !phone) {
+        return res.status(400).json({
+            success: false,
+            message: "please enter all fields"
+        });
+    }
+
+    const user = await userModel.create({
+        userName,
+        email,
+        password,
+        phone
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "user created successfully",
+        user
+    });
 });
 
-
+app.listen(5000, () => {
+    console.log("Server started on port 5000")
+})
