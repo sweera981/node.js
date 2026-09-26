@@ -147,135 +147,167 @@
 // });
 
 
+// import express from "express";
+// import mongoose from "mongoose";
+// import multer from "multer";
+// import "dotenv/config";
+
+// const app = express();
+// app.use(express.json());
+
+// // Multer configuration for file uploads
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, "uploads/");
+//     },
+//     filename: function (req, file, cb) {
+//         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+//         cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
+//     },
+// });
+// const upload = multer({ storage: storage });
+
+// // MongoDB connection
+// async function main() {
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI);
+//         console.log("Database connected mongodb");
+//     } catch (err) {
+//         console.log("Database connection error:", err);
+//     }
+// }
+// main();
+
+// const userSchema = new mongoose.Schema({
+//     userName: {
+//         type: String, minLength: 3, maxLength: 20, required: true
+//     },
+//     email: {
+//         type: String, required: true, unique: true, lowercase: true
+//     },
+//     phone: {
+//         type: String, required: true, unique: true
+//     },
+//     password: {
+//         type: String, minLength: 5, maxLength: 20, required: true, select: false
+//     },
+// }, { timestamps: true })
+
+
+// const userModel = new mongoose.model("User", userSchema)
+
+// app.post("/users", async (req, res) => {
+//     const { userName, email, password, phone } = req.body;
+
+//     if (!userName || !email || !password || !phone) {
+//         return res.status(400).json({
+//             success: false,
+//             message: "please enter all fields"
+//         });
+//     }
+
+//     const user = await userModel.create({
+//         userName,
+//         email,
+//         password,
+//         phone
+//     });
+
+//     return res.status(200).json({
+//         success: true,
+//         message: "user created successfully",
+//         user
+//     });
+// });
+// // get all users
+// app.get("/users", async (req, res) => {
+//     const users = await userModel.find();
+//     res.status(200).json({ success: true, users });
+// });
+
+// // get user through id
+// app.get("/user/:id", async (req, res) => {
+//     const { id } = req.params;
+
+//     const user = await userModel.findById(id);
+
+//     if (!user) {
+//         return res.status(404).json({
+//             success: false,
+//             message: "User not found"
+//         });
+//     }
+
+//     res.status(200).json({
+//         success: true,
+//         user
+//     });
+// });
+// app.put("/user/:id", upload.single("picture"), async (req, res) => {
+//     const { id } = req.params;
+//     let updateData = req.body;
+
+//     if (req.file) {
+//         updateData.picture = `${process.env.APP_URL}/uploads/${req.file.filename}`;
+//     }
+
+//     const updatedUser = await userModel.findByIdAndUpdate(id, updateData, {
+//         new: true,
+//         runValidators: true
+//     });
+
+//     if (!updatedUser) {
+//         return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     res.status(200).json({ success: true, message: "User updated", user: updatedUser });
+// });
+
+
+
+// app.delete("/user/:id", async (req, res) => {
+//     const { id } = req.params;
+
+//     const deletedUser = await userModel.findByIdAndDelete(id);
+
+//     if (!deletedUser) {
+//         return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     res.status(200).json({ success: true, message: "User deleted successfully" });
+// });
+// app.listen(5000, () => {
+//     console.log("Server started on port 5000")
+// })
+
+
 import express from "express";
-import mongoose from "mongoose";
-import multer from "multer";
-import "dotenv/config";
-
 const app = express();
-app.use(express.json());
 
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + "-" + uniqueSuffix + "." + file.mimetype.split("/")[1]);
-    },
-});
-const upload = multer({ storage: storage });
 
-// MongoDB connection
-async function main() {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log("Database connected mongodb");
-    } catch (err) {
-        console.log("Database connection error:", err);
+//middleware
+app.use((req, res, next) => {
+    console.log("Logger middleware1 ");
+    let token = req.header.authorization
+    if (token) {
+        next();
     }
-}
-main();
-
-const userSchema = new mongoose.Schema({
-    userName: {
-        type: String, minLength: 3, maxLength: 20, required: true
-    },
-    email: {
-        type: String, required: true, unique: true, lowercase: true
-    },
-    phone: {
-        type: String, required: true, unique: true
-    },
-    password: {
-        type: String, minLength: 5, maxLength: 20, required: true, select: false
-    },
-}, { timestamps: true })
-
-
-const userModel = new mongoose.model("User", userSchema)
-
-app.post("/users", async (req, res) => {
-    const { userName, email, password, phone } = req.body;
-
-    if (!userName || !email || !password || !phone) {
-        return res.status(400).json({
-            success: false,
-            message: "please enter all fields"
-        });
+    else {
+        res.send("login first")
     }
-
-    const user = await userModel.create({
-        userName,
-        email,
-        password,
-        phone
-    });
-
-    return res.status(200).json({
-        success: true,
-        message: "user created successfully",
-        user
-    });
 });
-// get all users
-app.get("/users", async (req, res) => {
-    const users = await userModel.find();
-    res.status(200).json({ success: true, users });
+//?middleware2
+app.use((req, res, next) => {
+    console.log("my Logger middleware");
+    next();
+});
+app.get("/", (req, res) => {
+    res.send("Home page");
+});
+app.get("/about", (req, res) => {
+    res.send("about page");
 });
 
-// get user through id
-app.get("/user/:id", async (req, res) => {
-    const { id } = req.params;
-
-    const user = await userModel.findById(id);
-
-    if (!user) {
-        return res.status(404).json({
-            success: false,
-            message: "User not found"
-        });
-    }
-
-    res.status(200).json({
-        success: true,
-        user
-    });
-});
-app.put("/user/:id", upload.single("picture"), async (req, res) => {
-    const { id } = req.params;
-    let updateData = req.body;
-
-    if (req.file) {
-        updateData.picture = `${process.env.APP_URL}/uploads/${req.file.filename}`;
-    }
-
-    const updatedUser = await userModel.findByIdAndUpdate(id, updateData, {
-        new: true,
-        runValidators: true
-    });
-
-    if (!updatedUser) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({ success: true, message: "User updated", user: updatedUser });
-});
-
-
-
-app.delete("/user/:id", async (req, res) => {
-    const { id } = req.params;
-
-    const deletedUser = await userModel.findByIdAndDelete(id);
-
-    if (!deletedUser) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({ success: true, message: "User deleted successfully" });
-});
 app.listen(5000, () => {
     console.log("Server started on port 5000")
 })
