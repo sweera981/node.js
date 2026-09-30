@@ -281,32 +281,41 @@
 // })
 
 
-import express from "express";
+// import express from "express";
+// const app = express();
+
+
+// //middleware
+// app.use((req, res, next) => {
+//     console.log("Logger middleware1 ");
+//     let token = req.header.authorization
+//     if (token) {
+//         next();
+//     }
+//     else {
+//         res.send("login first")
+//     }
+// });
+// //?middleware2
+// app.use((req, res, next) => {
+//     console.log("my Logger middleware");
+//     next();
+// });
+// app.get("/", (req, res) => {
+//     res.send("Home page");
+// });
+// app.get("/about", (req, res) => {
+//     res.send("about page");
+// });
+
+// app.listen(5000, () => {
+//     console.log("Server started on port 5000")
+// })
+
+import express from 'express';
+import userRouter from "./src/routes/user.route.js";
 const app = express();
-
-
-//middleware
-app.use((req, res, next) => {
-    console.log("Logger middleware1 ");
-    let token = req.header.authorization
-    if (token) {
-        next();
-    }
-    else {
-        res.send("login first")
-    }
-});
-//?middleware2
-app.use((req, res, next) => {
-    console.log("my Logger middleware");
-    next();
-});
-app.get("/", (req, res) => {
-    res.send("Home page");
-});
-app.get("/about", (req, res) => {
-    res.send("about page");
-});
+app.use("/user", userRouter)
 
 app.listen(5000, () => {
     console.log("Server started on port 5000")
