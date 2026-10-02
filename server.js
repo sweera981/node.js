@@ -312,11 +312,19 @@
 //     console.log("Server started on port 5000")
 // })
 
+import 'dotenv/config';
 import express from 'express';
 import userRouter from "./src/routes/user.route.js";
+import productRouter from './src/routes/product.route.js';
+import dbConnect from './src/config/db.js';
+
 const app = express();
-app.use("/user", userRouter)
+app.use(express.json());
+app.use("/user", userRouter);
+app.use("/products", productRouter);
+
+dbConnect();
 
 app.listen(5000, () => {
-    console.log("Server started on port 5000")
-})
+    console.log("Server started on port 5000");
+});
