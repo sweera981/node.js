@@ -312,19 +312,41 @@
 //     console.log("Server started on port 5000")
 // })
 
-import 'dotenv/config';
-import express from 'express';
-import userRouter from "./src/routes/user.route.js";
-import productRouter from './src/routes/product.route.js';
-import dbConnect from './src/config/db.js';
+// import 'dotenv/config';
+// import express from 'express';
+// import userRouter from "./src/routes/user.route.js";
+// import productRouter from './src/routes/product.route.js';
+// import dbConnect from './src/config/db.js';
 
-const app = express();
-app.use(express.json());
-app.use("/user", userRouter);
-app.use("/products", productRouter);
+// const app = express();
+// app.use(express.json());
+// app.use("/user", userRouter);
+// app.use("/products", productRouter);
 
-dbConnect();
+// dbConnect();
 
-app.listen(5000, () => {
-    console.log("Server started on port 5000");
-});
+// app.listen(5000, () => {
+//     console.log("Server started on port 5000");
+// });
+import express from 'express'
+import authRoutes from './src/routes/auth.route.js';
+import dotenv from 'dotenv'
+import connectDB from './src/config/db.js';
+import productRoutes from './src/routes/product.route.js'
+dotenv.config();
+
+const app = express()
+const PORT = 5000
+
+app.use(express.json())
+
+
+app.use("/auth", authRoutes)
+app.use("/product", productRoutes)
+
+
+app.listen(5000, async () => {
+
+    await connectDB()
+    console.log("Server started on port 5000")
+})
