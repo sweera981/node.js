@@ -328,12 +328,11 @@
 // app.listen(5000, () => {
 //     console.log("Server started on port 5000");
 // });
+import 'dotenv/config';
 import express from 'express'
 import authRoutes from './src/routes/auth.route.js';
-import dotenv from 'dotenv'
 import connectDB from './src/config/db.js';
 import productRoutes from './src/routes/product.route.js'
-dotenv.config();
 
 const app = express()
 const PORT = 5000

@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Password is required'],
         },
+        otp: {
+            type: String,
+            trim: true
+        },
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
         role: {
             type: String,
             default: 'user',
